@@ -1,9 +1,18 @@
-print("hello world")
-#print is a function that takes in a string and prints the string to the terminal.
+'''
+Comments:
+
+Longer comments can be enclosed by 3 quotes like this.
+'''
+#Shorter cmments in python are indicated by a '#' like this
+
+#The first program anyone writes in any language is the "hello world" program.
+print("hello world") #print is a function that takes in a string and prints the string to the terminal.
+
+#Python allows us to use variables to represent objects.
 x="hello" #set the variable x to be the string "hello".
 print(x)
 
-y= 5
+y= 5 #variables can also be integers.
 z=10
 print(y+z)
 

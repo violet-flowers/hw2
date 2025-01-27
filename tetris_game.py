@@ -78,7 +78,7 @@ def convert_shape_format(piece):
     shape = piece.shape[piece.rotation % len(piece.shape)]
 
     for i, line in enumerate(shape):
-        for j, column in enumerate(line):
+        for j, column in enumerate(range(line)):
             if column == 1:
                 positions.append((piece.x + j, piece.y + i))
 
