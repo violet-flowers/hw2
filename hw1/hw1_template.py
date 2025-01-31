@@ -32,6 +32,7 @@ def weird_sequence(n):
     The exponent operator in python is expressed using **. For example, 100==10**2
     '''
     pass
+    #Your last line should be return my_list
 #3.) Count repeated occurences of letters.
 
 def count_double_letters(input_string):
@@ -41,3 +42,6 @@ def count_double_letters(input_string):
     #When run on "hmmm...?", it should return 4.
     #When run on "double  spaced  words", it should return 2.
     pass
+    #your last line should be return my_answer
+
+#Make sure you name your file homework1.py
