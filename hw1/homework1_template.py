@@ -17,7 +17,14 @@ def diamond_of_stars(n):
  * *
   *
     '''
-    pass
+    print('''
+  *
+ * *
+* * *
+ * *
+  *
+    ''')
+diamond_of_stars(3)
 
 #2.) The weird sequence of numbers.
 
