@@ -27,7 +27,7 @@ class CreateTests(TestCase):
 
     @weight(10)
     @number(3)
-    @visibility('visibile')
+    @visibility('visible')
     def test_repeated_letters(self):
         assert count_double_letters("raccoons appear, skiing weekly.")==5
         assert count_double_letters("hmmm...?")==4
