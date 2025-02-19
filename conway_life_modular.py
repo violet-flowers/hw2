@@ -46,7 +46,6 @@ def count_neighbors(cell,grid):
         else: 
             return False
     neighbors = [(cell[0]+index_i,cell[1]+index_j) for index_i in [-1,0,1] for index_j in [-1,0,1] if is_valid_index(index_i,index_j) and not index_i==index_j==0]
-    print(neighbors)
     return len(neighbors)
 count_neighbors((1,1),[['*','*'],['*','*']])
 def update_cell(cell,grid):
@@ -71,15 +70,14 @@ def update_cell(cell,grid):
             else: #number_of_live_neighbors == 3
                 return('O')
 
-
-def update_game(current_grid):
+def update_grid(current_grid):
     #input: The grid (doubly nested list of '*' and 'O') before applying the game step.
     #output: The grid after applying a game step.
     #side_effect: None
 
     #Go through each cell of the grid and update each cell.
     
-    new_grid = current_grid #We should use copy, but let's do it incorrectly for now.
+    new_grid = copy.deepcopy(current_grid) #We should use copy, but let's do it incorrectly for now.
     for row in range(len(new_grid)):
         for col in range(len(new_grid[0])):
             new_grid[row][col] = update_cell((row, col),current_grid)
@@ -89,8 +87,36 @@ def game_loop(initial_grid):
     #input is a initial grid, doubly nested list of '*' and 'O'.
     #ouput is the number of steps until the game repeats itself.
     #side-effects: None
-
-# initial_game= initialize_game(10,0.2)
-# for row in initial_game:
-#     print(row)
-
+    grids_seen = []
+    current_grid= copy.deepcopy(initial_grid)
+    while(not current_grid in grids_seen): #creates an infinite loop.
+        grids_seen.append(current_grid) #add the current grid to the grids that we've seen.
+        current_grid = update_grid(current_grid)
+    return len(grids_seen)
+def get_prob_for_longest_average(size,num_iterations=100,prob_incr = 0.1):
+    #input: size: the size of the grids (int),
+    #       num_iterations: The number of times to run the game with each probability
+    #       prob_incr: The size of the intervals between the probabilities that we are testing. 
+    #output: the probability that gives the largest time before looping.
+    #side effects: none
+    list_of_averages =[] #The average for each probability
+    for probability in [prob*prob_incr for prob in range( int(1/prob_incr) +1) ]:
+        times_til_loop = []
+        for _ in range(num_iterations):
+            initial_grid = initialize_game(size, probability)
+            times_til_loop.append(game_loop(initial_grid))
+        average_time_til_loop = sum(times_til_loop)/len(times_til_loop)
+        list_of_averages.append(average_time_til_loop)
+    print("list of averages ", list_of_averages)
+    index_of_largest = list_of_averages.index(max(list_of_averages))
+    return index_of_largest*prob_incr
+if __name__== "__main__":
+    #print(get_prob_for_longest_average(10))
+    pass
+    initial_game = initialize_game(10,0.4)
+    current_game = copy.deepcopy(initial_game)
+    for _ in range(10):
+        current_game = update_grid(current_game)
+        for row in initial_game:
+            print(row)
+        print("---")
