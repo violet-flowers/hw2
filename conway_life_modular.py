@@ -41,13 +41,16 @@ def count_neighbors(cell,grid):
     def is_valid_index(i,j):
         #inputs: i,j are indices (integers)
         #ouputs: True/False depending on whether i,j is a valid index on the grid.
-        if 0<=i<len(grid) and 0<=j<len(grid):
+        if 0<=i<len(grid) and 0<=j<len(grid[0]):
             return True
         else: 
             return False
-    neighbors = [(cell[0]+index_i,cell[1]+index_j) for index_i in [-1,0,1] for index_j in [-1,0,1] if is_valid_index(index_i,index_j) and not index_i==index_j==0]
-    return len(neighbors)
-count_neighbors((1,1),[['*','*'],['*','*']])
+    neighbors = [(cell[0]+index_i,cell[1]+index_j) 
+                 for index_i in [-1,0,1] for index_j 
+                 in [-1,0,1] if not index_i==index_j==0] # total number of neigbors dead or alive.
+    valid_neighbors = [neighbor for neighbor in neighbors if is_valid_index(neighbor[0], neighbor[1])]
+    live_neighbors = [neighbor for neighbor in valid_neighbors if grid[neighbor[0]][neighbor[1]]=='O']
+    return len(live_neighbors)
 def update_cell(cell,grid):
     #inputs: grid is a doubly nested list of '*' and 'O'.
     #        cell is a list [i,j], where cell=grid[i][j].
@@ -59,24 +62,21 @@ def update_cell(cell,grid):
     #Then we apply the rules of the game of life.
     
     num_live_neighbors = count_neighbors(cell, grid)
-    for row in range(len(grid)):
-        for col in range(len(grid[0])):
-            if num_live_neighbors<2: #rule 1
-                return('*')
-            elif num_live_neighbors ==2:
-                return(grid[row][col])
-            elif num_live_neighbors > 3: #rule 4
-                return('*')
-            else: #number_of_live_neighbors == 3
-                return('O')
+    if num_live_neighbors<2: #rule 1
+        return('*')
+    elif num_live_neighbors ==2:
+        return(grid[cell[0]][cell[1]])
+    elif num_live_neighbors > 3: #rule 4
+        return('*')
+    else: #number_of_live_neighbors == 3
+        return('O')
 
 def update_grid(current_grid):
     #input: The grid (doubly nested list of '*' and 'O') before applying the game step.
     #output: The grid after applying a game step.
     #side_effect: None
 
-    #Go through each cell of the grid and update each cell.
-    
+    #Goes through each cell of the grid and updates each cell.
     new_grid = copy.deepcopy(current_grid) #We should use copy, but let's do it incorrectly for now.
     for row in range(len(new_grid)):
         for col in range(len(new_grid[0])):
@@ -111,12 +111,4 @@ def get_prob_for_longest_average(size,num_iterations=100,prob_incr = 0.1):
     index_of_largest = list_of_averages.index(max(list_of_averages))
     return index_of_largest*prob_incr
 if __name__== "__main__":
-    #print(get_prob_for_longest_average(10))
-    pass
-    initial_game = initialize_game(10,0.4)
-    current_game = copy.deepcopy(initial_game)
-    for _ in range(10):
-        current_game = update_grid(current_game)
-        for row in initial_game:
-            print(row)
-        print("---")
+    get_prob_for_longest_average(10)
