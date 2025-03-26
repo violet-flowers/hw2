@@ -2,15 +2,17 @@
 Please name this file "homework2.py" then upload it to gradescope.
 We will implement the classes:  velocipede.
                                   bike (inherits from velocipede).
-                                  winning_bike (inherits from bike. You write this). 
                                 rider
-                                  user_rider (inherits from rider)
+                                  user_rider (inherits from rider. You write this.)
+                                  optimized_rider (inherits from rider. You write this.)
                                 track
                                 race
 Then we simulate a bike race!
 
-By default, riders will be A.I. agents.
-Your part of the code will be to implement a game where a user can race against the A.I. agents.
+By default, riders will always switch gears up and pedal 5 times.
+Your part of the code will be to implement a game where a user can race against the computer.
+Then you will write the class optimized_rider that overwrites the gear_switch_policy and pedal_policy.
+The optimized_rider should win the race against the unoptimized riders.
 '''
 TIMESTEP_CONSTANT = 5.0 #Each timestep represents this many seconds.
 class velocipede(object):
@@ -70,8 +72,10 @@ class rider(object):
             #The point of pedal_energy_cost is to prevent you from staying in the lowest gear and pedaling really fast.
         self.silent = silent #used to suppress printing.
     def gear_switch_policy(self,track):
+        #Returns an integer. How many gears to go up or down.
         return 1 #the rider always switches gears up.
     def pedal_policy(self,track):
+        #Returns a float. How many times to pedal in the timestep.
         return 5 #the rider always pedals 5 times.
     
     def pedal_energy_and_speed(self, num_rotations):
