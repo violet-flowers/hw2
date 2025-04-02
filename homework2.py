@@ -212,55 +212,54 @@ class user_rider(rider):
     def gear_switch_policy(self, track):
         while True:
             try:
-                shift = int(input(f"{self.name}, enter gear shift (-1 for down, 1 for up, 0 to stay): "))
-                if shift in [-1, 0, 1]:
-                    return shift
-                print("Invalid input. Enter -1, 0, or 1.")
+                shift = int(input(f"{self.name}: Enter gear shift (+ for up, - for down, 0 for no change): "))
+                return shift
             except ValueError:
                 print("Invalid input. Please enter an integer.")
 
     def pedal_policy(self, track):
         while True:
             try:
-                pedal_count = int(input(f"{self.name}, enter number of pedal rotations (0-10): "))
-                if 0 <= pedal_count <= 10:
-                    return pedal_count
-                print("Invalid input. Enter a number between 0 and 10.")
+                pedals = int(input(f"{self.name}: Enter number of pedal rotations: "))
+                return max(0, pedals)
             except ValueError:
                 print("Invalid input. Please enter an integer.")
-
 
 class optimized_rider(rider):
     def __init__(self, name, velocipede_to_ride, weight, max_stamina, regeneration, pedal_energy_cost, silent=False):
         super().__init__(name, velocipede_to_ride, weight, max_stamina, regeneration, pedal_energy_cost, silent)
-        self.previous_pedal_count = 5  # Start with a moderate pedaling strategy
+        self.prev_pedal = 5
 
     def gear_switch_policy(self, track):
-        if self.stamina > 0.7 * self.max_stamina:
-            return 1  # Shift up if stamina is high
-        elif self.stamina < 0.3 * self.max_stamina:
-            return -1  # Shift down if stamina is low
-        return 0  # Maintain current gear otherwise
+        if self.stamina > self.max_stamina * 0.5 and self.velocipede.current_speed < 15:
+            return 1
+        elif self.stamina < self.max_stamina * 0.3:
+            return -1
+        return 0
 
     def pedal_policy(self, track):
-        if self.stamina > 0.7 * self.max_stamina:
-            return min(10, self.previous_pedal_count + 1)  # Increase pedaling if stamina is high
-        elif self.stamina < 0.3 * self.max_stamina:
-            return max(2, self.previous_pedal_count - 2)  # Reduce pedaling if stamina is low
-        return self.previous_pedal_count  # Maintain previous rate otherwise
-
+        if self.stamina > self.max_stamina * 0.6:
+            self.prev_pedal = min(self.prev_pedal + 1, 10)
+        elif self.stamina < self.max_stamina * 0.3:
+            self.prev_pedal = max(self.prev_pedal - 2, 2)
+        return self.prev_pedal
 
 if __name__ == "__main__":
-    # The code here also appears in test_unoptimized_race in the test file.
-    # Using the default pedal policy, Yoshi should win the race.
     marios_velocipede = velocipede([(1, 1), (2, 3), (1, 2), (1, 5), (1, 7)], 30, efficiency=0.8)
     warios_velocipede = velocipede([(1, 1), (2, 3), (1, 2), (1, 3), (1, 5)], 30, efficiency=0.7)
     yoshis_velocipede = velocipede([(3, 1), (2, 1), (1, 1), (2, 3), (1, 2), (1, 3), (1, 5), (1, 7)], 30, efficiency=0.9)
 
-    mario = rider("Mario", marios_velocipede, 50, 6000, 30,
-                  10)  # The parameters are name, velocipede, weight, max_stamina, regeneration, cost per pedal
+    # Mario optimized, others default
+    mario = optimized_rider("Mario", marios_velocipede, 50, 6000, 30, 10)
     wario = rider("Wario", warios_velocipede, 100, 11000, 20, 20)
     yoshi = rider("Yoshi", yoshis_velocipede, 75, 7000, 25, 15)
     rainbow_road = track()
     grand_prix1 = race([mario, wario, yoshi], rainbow_road)
-    print(f"And the winner is: {grand_prix1.start_race()}")
+    print(f"Winner when Mario is optimized: {grand_prix1.start_race()}")
+
+    # Wario optimized, others default
+    mario = rider("Mario", marios_velocipede, 50, 6000, 30, 10)
+    wario = optimized_rider("Wario", warios_velocipede, 100, 11000, 20, 20)
+    yoshi = rider("Yoshi", yoshis_velocipede, 75, 7000, 25, 15)
+    grand_prix2 = race([mario, wario, yoshi], rainbow_road)
+    print(f"Winner when Wario is optimized: {grand_prix2.start_race()}")
